@@ -355,8 +355,8 @@ fn combine_input_dfs(sr_df: &DataFrame, txr_df: &DataFrame) -> Result<DataFrame,
             col("Zahlungsmethode"),
             lit(1).alias("Menge").cast(DataType::Int64),
             lit("Trinkgeld").alias("Beschreibung"),
-            col("Category"),
-            col("Sku"),
+            col("Kategorie"),
+            col("Artikelnummer"),
             col("Währung"),
             col("TG").alias("Preis vor Rabatt"),
             lit(0.0).alias("Rabatt"),
@@ -503,9 +503,9 @@ fn infer_payment_method() -> Expr {
 /// - If the description is "Miete", the topic will be `Rental` regardless of time or day.
 /// - If the description starts with "Kerze", the topic will be Culture regardless of time or day.
 fn infer_topic(time_options: &StrptimeOptions) -> Expr {
-    when(col("Category").eq(lit("Mittagstisch")))
+    when(col("Kategorie").eq(lit("Mittagstisch")))
         .then(lit(Topic::MiTi.to_string()))
-        .when(col("Category").str().contains(lit(" \\(PO\\)"), true))
+        .when(col("Kategorie").str().contains(lit(" \\(PO\\)"), true))
         .then(lit(Topic::Culture.to_string()))
         .when(
             col("Beschreibung")
@@ -555,9 +555,9 @@ fn infer_owner() -> Expr {
             .and(col("Topic").neq(lit(Topic::Culture.to_string()))),
     )
     .then(lit(NULL))
-    .when(col("Category").eq(lit("Mittagstisch")))
+    .when(col("Kategorie").eq(lit("Mittagstisch")))
     .then(lit(Owner::MiTi.to_string()))
-    .when(col("Category").str().contains(lit(" \\(PO\\)"), true))
+    .when(col("Kategorie").str().contains(lit(" \\(PO\\)"), true))
     .then(lit(Owner::PaidOut.to_string()))
     .when(
         col("Topic")
@@ -850,7 +850,7 @@ mod tests {
                 false, true, false,
                 false, false,
             ],
-            "Category" => [
+            "Kategorie" => [
            	    "", "",
                 "", "",
                 "", "",
@@ -924,7 +924,7 @@ mod tests {
                 "Dessert", "Hauptgang Vegi Standard", "unbekannte bechreibung",
                 "bar (PO)", "foo",
             ],
-            "Category" => [
+            "Kategorie" => [
                 "Alkoholfrei", "Heissgetränke", "Schichtwechsel",
                 "Mittagstisch", "Mittagstisch", "Mittagstisch",
                 "Kultur Essen (PO)", "Any (PO)",
