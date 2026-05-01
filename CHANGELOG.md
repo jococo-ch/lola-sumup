@@ -25,13 +25,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.4.8](https://github.com/jococo-ch/lola-sumup/compare/v0.4.7...v0.4.8) - 2026-04-14
 
-### ### Fixed
+### Fixed
 
 - fix SECRETS after amending PAT for homebrew-tap
 
 ## [0.4.7](https://github.com/jococo-ch/lola-sumup/compare/v0.4.6...v0.4.7) - 2026-04-14
 
-### ### Added
+### Added
 
 - publish to homebrew-tap
 
