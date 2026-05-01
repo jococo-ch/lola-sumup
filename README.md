@@ -363,6 +363,7 @@ The columns of the resulting details export file are defined as follows:
   - `MiTi_Tips_Card`: Tips for Mittagstisch paid by Card
   - `MiTi_Tips`: Tips for Mittagstisch (Total) [`MiTi_Tips_Cash` + `MiTi_Tips_Card`]
   - `Cafe_Tips`: Tips for Café
+  - `Culture_Tips`: Tips for Cultural events
   - `Verm_Tips`: Tips for Vermietungen
 - Split of Topic Mittagstisch by Owner:
   - `Gross MiTi (MiTi)`: Gross Income Mittagstisch from their own Menus (paid via Card or Cash)
