@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.10](https://github.com/jococo-ch/lola-sumup/compare/v0.4.9...v0.4.10) - 2026-05-01
+
+### Added
+
+- [#546] New reconciliation report Belegskontrolle ([#547](https://github.com/jococo-ch/lola-sumup/pull/547))
+
+### Fixed
+
+- Adjust to newest version of Sumup Verkaufsbericht ([#544](https://github.com/jococo-ch/lola-sumup/pull/544))
+
 ## [0.4.9](https://github.com/jococo-ch/lola-sumup/compare/v0.4.8...v0.4.9) - 2026-04-14
 
 ### Fixed
