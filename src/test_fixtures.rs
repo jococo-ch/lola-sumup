@@ -325,7 +325,7 @@ pub fn details_df_03(sample_date: NaiveDate) -> DataFrame {
     .expect("valid details dataframe 02")
 }
 
-/// Sample record 03 matching the accounting dataframe created from `details_df_03`
+/// Sample record 03 matching the accounting and reconcoliation dataframes created from `details_df_03`
 #[fixture]
 pub fn accounting_df_03(sample_date: NaiveDate) -> DataFrame {
     df!(
@@ -390,6 +390,22 @@ pub fn miti_df_03(sample_date: NaiveDate) -> DataFrame {
         "Überweisung" => &[147.76],
     )
     .expect("Valid miti df 03")
+}
+
+/// Sample record 03 matching the miti dataframe created from `details_df_03`
+#[fixture]
+pub fn reconciliation_df_03(sample_date: NaiveDate) -> DataFrame {
+    df!(
+        "Datum" => &[sample_date],
+        "Cafe Cash" => &[29.5],
+        "Cafe Card" => &[20.0],
+        "Cafe Tips" => &[3.5],
+        "Culture Cash" => &[0.0],
+        "Culture Card" => &[500.0],
+        "Culture Tips" => &[0.0],
+        "PaidOut" => &[100.0],
+    )
+    .expect("Valid reconciliation df 03")
 }
 
 //endregion

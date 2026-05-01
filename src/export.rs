@@ -17,6 +17,7 @@ use crate::export::export_accounting::{
 use crate::export::export_banana::{gather_df_banana, gather_df_banana_details};
 use crate::export::export_details::collect_data;
 use crate::export::export_miti::gather_df_miti;
+use crate::export::export_reconciliation::gather_df_reconciliation;
 use crate::prepare::{Topic, warn_on_zero_value_trx};
 
 mod constraint;
@@ -24,6 +25,7 @@ mod export_accounting;
 mod export_banana;
 mod export_details;
 mod export_miti;
+mod export_reconciliation;
 mod posting;
 
 const EXCEL_EPOCH_OFFSET: i32 = 25569;
@@ -40,6 +42,7 @@ pub fn export(input_path: &Path, month: &str, ts: &str) -> Result<(), Box<dyn Er
     export_details(month, ts, &df_det, &raw_df_corr)?;
     export_mittagstisch(month, ts, &df_det, &raw_df_corr)?;
     export_accounting(month, ts, &df_acc, &raw_df_corr)?;
+    export_reconciliation(month, ts, &df_det, &raw_df_corr)?;
     export_banana(month, ts, &df_banana, &raw_df_corr)
 }
 
@@ -257,6 +260,17 @@ fn export_mittagstisch(
         .filter(col("Topic").eq(lit(Topic::MiTi.to_string())))
         .collect()?;
     write_to_file(&df_miti, &df_miti_trx, "mittagstisch", month, ts)?;
+    Ok(())
+}
+
+fn export_reconciliation(
+    month: &str,
+    ts: &str,
+    df_det: &DataFrame,
+    df_trx: &DataFrame,
+) -> Result<(), Box<dyn Error>> {
+    let df_reconciliation = gather_df_reconciliation(df_det)?;
+    write_to_file(&df_reconciliation, df_trx, "belegskontrolle", month, ts)?;
     Ok(())
 }
 

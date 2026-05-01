@@ -160,6 +160,7 @@ Options:
 It produces five exports in Excel format (with month and execution timestamp in the file name accordingly):
 - `accounting_202604_20260503142503.xlsx`
 - `banana_202604_20260503142503.xlsx`
+- `belegskontrolle_202604_20260503142503.xlsx`
 - `mittagstisch_202604_20260503142503.xlsx`
 - `details_202604_20260503142503.xlsx`
 
@@ -222,6 +223,26 @@ The columns of the resulting file are defined as follows:
   - `Verkauf LoLa (80%)` 80% of net sales lola goods [-`Net MiTi (LoLA) - Share LoLa`]
   - `Gesponsort` LoLa sponsored reductions (2.00 per Meal) [`Sponsored Reductions`]
   - `Überweisung`: Net Payment LoLa to Mittagstisch [`Debt to MiTi`]
+
+### Reconciliation (Belegskontrolle) Report
+
+The purpose of the reconciliation export is to quickly reconcile
+the current state of the data from the intermediate file against
+the collected daily slips ("Tagesbelege"). Thus days are easily
+identified where special attention is required (e.g. applying
+corrections to the intermediate file).
+
+The columns of the resulting file are defined as follows:
+
+- Generic columns
+  - `Datum`: [`Date`]
+  - `Cafe Cash`: Cash income Cafe [`Cafe_Cash`]
+  - `Cafe Card`: Card income Cafe [`Cafe_Card`]
+  - `Cafe Tips`: Tips Cafe [`Cafe_Tips`]
+  - `Culture Cash`: Cash income Culture [`Culture_Cash`]
+  - `Culture Card`: Card income Culture [`Culture_Card`]
+  - `Culture Tips`: Tips Culture [`Culture_Tips`]
+  - `PaidOut`: Total PaidOut for Culture (to Kooperationspartner) [`Culture (PaidOut) Total`]
 
 ### Accounting Report
 
