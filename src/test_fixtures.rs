@@ -213,6 +213,7 @@ pub fn details_df_02(sample_date: NaiveDate) -> DataFrame {
         "MiTi_Tips_Card" => &[None::<f64>],
         "MiTi_Tips" => &[None::<f64>],
         "Cafe_Tips" => &[None::<f64>],
+        "Culture_Tips" => &[None::<f64>],
         "Verm_Tips" => &[None::<f64>],
         "Gross MiTi (MiTi)" => &[Some(29.0)],
         "Gross MiTi (LoLa)" => &[Some(23.5)],
@@ -302,6 +303,7 @@ pub fn details_df_03(sample_date: NaiveDate) -> DataFrame {
         "MiTi_Tips_Card" => &[1.0],
         "MiTi_Tips" => &[1.5],
         "Cafe_Tips" => &[3.5],
+        "Culture_Tips" => &[0.0],
         "Verm_Tips" => &[0.0],
         "Gross MiTi (MiTi)" => &[261.0],
         "Gross MiTi (LoLa)" => &[53.0],
@@ -323,7 +325,7 @@ pub fn details_df_03(sample_date: NaiveDate) -> DataFrame {
     .expect("valid details dataframe 02")
 }
 
-/// Sample record 03 matching the accounting dataframe created from `details_df_03`
+/// Sample record 03 matching the accounting and reconcoliation dataframes created from `details_df_03`
 #[fixture]
 pub fn accounting_df_03(sample_date: NaiveDate) -> DataFrame {
     df!(
@@ -388,6 +390,22 @@ pub fn miti_df_03(sample_date: NaiveDate) -> DataFrame {
         "Überweisung" => &[147.76],
     )
     .expect("Valid miti df 03")
+}
+
+/// Sample record 03 matching the miti dataframe created from `details_df_03`
+#[fixture]
+pub fn reconciliation_df_03(sample_date: NaiveDate) -> DataFrame {
+    df!(
+        "Datum" => &[sample_date],
+        "Cafe Cash" => &[29.5],
+        "Cafe Card" => &[20.0],
+        "Cafe Tips" => &[3.5],
+        "Culture Cash" => &[0.0],
+        "Culture Card" => &[500.0],
+        "Culture Tips" => &[0.0],
+        "PaidOut" => &[100.0],
+    )
+    .expect("Valid reconciliation df 03")
 }
 
 //endregion
@@ -502,6 +520,7 @@ pub fn details_df_04(
         "MiTi_Tips_Card" => &[None::<f64>, None::<f64>, None::<f64>, Some(0.0)],
         "MiTi_Tips" => &[None::<f64>, None::<f64>, None::<f64>, Some(0.0)],
         "Cafe_Tips" => &[None::<f64>, None::<f64>, None::<f64>, Some(0.0)],
+        "Culture_Tips" => &[None::<f64>, None::<f64>, None::<f64>, Some(0.0)],
         "Verm_Tips" => &[None::<f64>, None::<f64>, None::<f64>, Some(0.0)],
         "Gross MiTi (MiTi)" => &[None::<f64>, Some(20.0), Some(11.0), Some(31.0)],
         "Gross MiTi (LoLa)" => &[None::<f64>, None::<f64>,None::<f64>,  Some(0.0)],
@@ -654,6 +673,7 @@ pub fn details_df_06(sample_date: NaiveDate, sample_date2: NaiveDate) -> DataFra
         "MiTi_Tips_Card" => &[None::<f64>, None::<f64>],
         "MiTi_Tips" => &[None::<f64>, None::<f64>],
         "Cafe_Tips" => &[None::<f64>, None::<f64>],
+        "Culture_Tips" => &[None::<f64>, None::<f64>],
         "Verm_Tips" => &[None::<f64>, None::<f64>],
         "Gross MiTi (MiTi)" => &[Some(13.0), None::<f64>],
         "Gross MiTi (LoLa)" => &[None::<f64>, None::<f64>],
@@ -930,6 +950,7 @@ pub fn details_df_08(sample_date: NaiveDate, sample_date2: NaiveDate) -> DataFra
         "MiTi_Tips_Card" => &[None::<f64>, None::<f64>],
         "MiTi_Tips" => &[None::<f64>, None::<f64>],
         "Cafe_Tips" => &[None::<f64>, None::<f64>],
+        "Culture_Tips" => &[None::<f64>, None::<f64>],
         "Verm_Tips" => &[None::<f64>, None::<f64>],
         "Gross MiTi (MiTi)" => &[Some(13.0), None::<f64>],
         "Gross MiTi (LoLa)" => &[None::<f64>, None::<f64>],

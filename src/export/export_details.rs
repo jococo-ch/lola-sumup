@@ -117,6 +117,7 @@ pub fn collect_data(raw_df: DataFrame) -> PolarsResult<DataFrame> {
         ldf.clone(),
     );
     let miti_tips = price_by_date_for(tips_of_topic(&Topic::MiTi), ldf.clone());
+    let cult_tips = price_by_date_for(tips_of_topic(&Topic::Culture), ldf.clone());
     let verm_tips = price_by_date_for(tips_of_topic(&Topic::Verm), ldf.clone());
     let tips_cash = price_by_date_for(tips_by_payment_method(&PaymentMethod::Cash), ldf.clone());
     let tips_card = price_by_date_for(tips_by_payment_method(&PaymentMethod::Card), ldf.clone());
@@ -291,7 +292,13 @@ pub fn collect_data(raw_df: DataFrame) -> PolarsResult<DataFrame> {
         [col("Date")],
         JoinType::Left.into(),
     );
-    let with_verm_tips = with_miti_tips.join(
+    let with_cult_tips = with_miti_tips.join(
+        cult_tips,
+        [col("Date")],
+        [col("Date")],
+        JoinType::Left.into(),
+    );
+    let with_verm_tips = with_cult_tips.join(
         verm_tips,
         [col("Date")],
         [col("Date")],
@@ -652,6 +659,7 @@ pub fn collect_data(raw_df: DataFrame) -> PolarsResult<DataFrame> {
             col("MiTi_Tips_Card"),
             col("MiTi_Tips"),
             col("Cafe_Tips"),
+            col("Culture_Tips"),
             col("Verm_Tips"),
             col("Gross MiTi (MiTi)"),
             col("Gross MiTi (LoLa)"),

@@ -71,7 +71,7 @@ Prepares an enriched intermediate file from the original sumup sales report CSV 
 Usage: lola-sumup prepare --sales-report <SALES_REPORT> --transaction-report <TRANSACTION_REPORT> <MONTH>
 
 Arguments:
-  <MONTH>  the month for which transactions are to be processed (<yyyymm>, e.g. 202305)
+  <MONTH>  the month for which transactions are to be processed (<yyyymm>, e.g. 202404)
 
 Options:
   -s, --sales-report <SALES_REPORT>              the sales-report to process
@@ -80,9 +80,9 @@ Options:
   -V, --version                                  Print version
 ```
 
-It produces a file named e.g. `intermediate_202305_20230603142215.xlsx`,
-where `202305` is the processed month with the timestamp indicating when the process was executed
-(03. June 2023 14:22:15).
+It produces a file named e.g. `intermediate_202604_20260503142215.xlsx`,
+where `202604` is the processed month with the timestamp indicating when the process was executed
+(03. May 2026 14:22:15).
 
 #### Manual redaction of existing transactions
 
@@ -157,11 +157,12 @@ Options:
   -V, --version  Print version
 ```
 
-It produces four exports in Excel format (with month and execution timestamp in the file name accordingly):
-- `accounting_202305_20230603142503.xlsx`
-- `banana_202305_20230603142503.xlsx`
-- `mittagstisch_202305_20230603142503.xlsx`
-- `details_202305_20230603142503.xlsx`
+It produces five exports in Excel format (with month and execution timestamp in the file name accordingly):
+- `accounting_202604_20260503142503.xlsx`
+- `banana_202604_20260503142503.xlsx`
+- `belegskontrolle_202604_20260503142503.xlsx`
+- `mittagstisch_202604_20260503142503.xlsx`
+- `details_202604_20260503142503.xlsx`
 
 Each of the exports contains a main worksheet with the export and in addition a second sheet "transactions"
 listing the underlying transactions from the intermediate file.
@@ -222,6 +223,26 @@ The columns of the resulting file are defined as follows:
   - `Verkauf LoLa (80%)` 80% of net sales lola goods [-`Net MiTi (LoLA) - Share LoLa`]
   - `Gesponsort` LoLa sponsored reductions (2.00 per Meal) [`Sponsored Reductions`]
   - `Überweisung`: Net Payment LoLa to Mittagstisch [`Debt to MiTi`]
+
+### Reconciliation (Belegskontrolle) Report
+
+The purpose of the reconciliation export is to quickly reconcile
+the current state of the data from the intermediate file against
+the collected daily slips ("Tagesbelege"). Thus days are easily
+identified where special attention is required (e.g. applying
+corrections to the intermediate file).
+
+The columns of the resulting file are defined as follows:
+
+- Generic columns
+  - `Datum`: [`Date`]
+  - `Cafe Cash`: Cash income Cafe [`Cafe_Cash`]
+  - `Cafe Card`: Card income Cafe [`Cafe_Card`]
+  - `Cafe Tips`: Tips Cafe [`Cafe_Tips`]
+  - `Culture Cash`: Cash income Culture [`Culture_Cash`]
+  - `Culture Card`: Card income Culture [`Culture_Card`]
+  - `Culture Tips`: Tips Culture [`Culture_Tips`]
+  - `PaidOut`: Total PaidOut for Culture (to Kooperationspartner) [`Culture (PaidOut) Total`]
 
 ### Accounting Report
 
@@ -363,6 +384,7 @@ The columns of the resulting details export file are defined as follows:
   - `MiTi_Tips_Card`: Tips for Mittagstisch paid by Card
   - `MiTi_Tips`: Tips for Mittagstisch (Total) [`MiTi_Tips_Cash` + `MiTi_Tips_Card`]
   - `Cafe_Tips`: Tips for Café
+  - `Culture_Tips`: Tips for Cultural events
   - `Verm_Tips`: Tips for Vermietungen
 - Split of Topic Mittagstisch by Owner:
   - `Gross MiTi (MiTi)`: Gross Income Mittagstisch from their own Menus (paid via Card or Cash)
