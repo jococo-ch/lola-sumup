@@ -330,7 +330,7 @@ dependencies = [
  "encoding_rs",
  "fast-float2",
  "log",
- "quick-xml 0.39.3",
+ "quick-xml 0.39.4",
  "serde",
  "zip",
 ]
@@ -1389,7 +1389,7 @@ dependencies = [
  "polars",
  "polars_excel_writer",
  "pretty_assertions",
- "quick-xml 0.39.3",
+ "quick-xml 0.40.0",
  "rstest",
  "rust_xlsxwriter",
  "serde",
@@ -2247,11 +2247,20 @@ dependencies = [
 
 [[package]]
 name = "quick-xml"
-version = "0.39.3"
+version = "0.39.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "721da970c312655cde9b4ffe0547f20a8494866a4af5ff51f18b7c633d0c870b"
+checksum = "cdcc8dd4e2f670d309a5f0e83fe36dfdc05af317008fea29144da1a2ac858e5e"
 dependencies = [
  "encoding_rs",
+ "memchr",
+]
+
+[[package]]
+name = "quick-xml"
+version = "0.40.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0b7315c86b26aaef0321fba33c9dcc160da659c6a9d278f0f6a5656d6561c03b"
+dependencies = [
  "memchr",
  "serde",
 ]
