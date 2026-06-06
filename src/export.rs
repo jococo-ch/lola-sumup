@@ -52,7 +52,8 @@ fn read_intermediate_from_excel(
     month: &str,
 ) -> Result<DataFrame, Box<dyn Error>> {
     let columns_vec = read_columns_from_excel(input_path, month)?;
-    let df = DataFrame::new(columns_vec)?
+    let height = columns_vec.first().map(|c| c.len()).unwrap_or(0);
+    let df = DataFrame::new(height, columns_vec)?
         .lazy()
         .with_column(
             col("Date")

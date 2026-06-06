@@ -185,28 +185,31 @@ fn new_row_with_vecs(
     credit: Vec<String>,
     amount: Vec<f64>,
 ) -> Result<DataFrame, Box<dyn Error>> {
-    let df = DataFrame::new(vec![
-        Column::new(
-            JournalColumn::Date.name().into(),
-            Series::new(JournalColumn::Date.name().into(), date),
-        ),
-        Column::new(
-            JournalColumn::Description.name().into(),
-            Series::new(JournalColumn::Description.name().into(), description),
-        ),
-        Column::new(
-            JournalColumn::Debit.name().into(),
-            Series::new(JournalColumn::Debit.name().into(), debit),
-        ),
-        Column::new(
-            JournalColumn::Credit.name().into(),
-            Series::new(JournalColumn::Credit.name().into(), credit),
-        ),
-        Column::new(
-            JournalColumn::Amount.name().into(),
-            Series::new(JournalColumn::Amount.name().into(), amount),
-        ),
-    ])?;
+    let df = DataFrame::new(
+        1,
+        vec![
+            Column::new(
+                JournalColumn::Date.name().into(),
+                Series::new(JournalColumn::Date.name().into(), date),
+            ),
+            Column::new(
+                JournalColumn::Description.name().into(),
+                Series::new(JournalColumn::Description.name().into(), description),
+            ),
+            Column::new(
+                JournalColumn::Debit.name().into(),
+                Series::new(JournalColumn::Debit.name().into(), debit),
+            ),
+            Column::new(
+                JournalColumn::Credit.name().into(),
+                Series::new(JournalColumn::Credit.name().into(), credit),
+            ),
+            Column::new(
+                JournalColumn::Amount.name().into(),
+                Series::new(JournalColumn::Amount.name().into(), amount),
+            ),
+        ],
+    )?;
     Ok(df)
 }
 
