@@ -357,7 +357,7 @@ fn validate_all_accounts_are_in_budget(enriched: &DataFrame) -> Result<(), Box<d
 fn get_name_of_post(col: &Column, budget: &Budget) -> PolarsResult<Column> {
     let accounts = col.str()?;
     Ok(accounts
-        .into_iter()
+        .iter()
         .map(|a| {
             a.map(|a| budget.get_post_by_account(a).map(|p| p.name.clone()))
                 .or(None)?
@@ -370,7 +370,7 @@ fn get_name_of_post(col: &Column, budget: &Budget) -> PolarsResult<Column> {
 fn get_budget_of_post(col: &Column, budget: &Budget, year: &str) -> PolarsResult<Column> {
     let accounts = col.str()?;
     Ok(accounts
-        .into_iter()
+        .iter()
         .map(|a| a.map(|a| budget.get_budget_amount_by_account(a, year)))
         .collect::<Float64Chunked>()
         .into_column())
@@ -392,7 +392,7 @@ where
 {
     let accounts = col.str()?;
     Ok(accounts
-        .into_iter()
+        .iter()
         .map(|a| {
             a.map(|a| budget.get_post_by_account(a).map(int_extractor))
                 .or(None)?
