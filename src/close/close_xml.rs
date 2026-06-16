@@ -185,28 +185,31 @@ fn new_row_with_vecs(
     credit: Vec<String>,
     amount: Vec<f64>,
 ) -> Result<DataFrame, Box<dyn Error>> {
-    let df = DataFrame::new(vec![
-        Column::new(
-            JournalColumn::Date.name().into(),
-            Series::new(JournalColumn::Date.name().into(), date),
-        ),
-        Column::new(
-            JournalColumn::Description.name().into(),
-            Series::new(JournalColumn::Description.name().into(), description),
-        ),
-        Column::new(
-            JournalColumn::Debit.name().into(),
-            Series::new(JournalColumn::Debit.name().into(), debit),
-        ),
-        Column::new(
-            JournalColumn::Credit.name().into(),
-            Series::new(JournalColumn::Credit.name().into(), credit),
-        ),
-        Column::new(
-            JournalColumn::Amount.name().into(),
-            Series::new(JournalColumn::Amount.name().into(), amount),
-        ),
-    ])?;
+    let df = DataFrame::new(
+        1,
+        vec![
+            Column::new(
+                JournalColumn::Date.name().into(),
+                Series::new(JournalColumn::Date.name().into(), date),
+            ),
+            Column::new(
+                JournalColumn::Description.name().into(),
+                Series::new(JournalColumn::Description.name().into(), description),
+            ),
+            Column::new(
+                JournalColumn::Debit.name().into(),
+                Series::new(JournalColumn::Debit.name().into(), debit),
+            ),
+            Column::new(
+                JournalColumn::Credit.name().into(),
+                Series::new(JournalColumn::Credit.name().into(), credit),
+            ),
+            Column::new(
+                JournalColumn::Amount.name().into(),
+                Series::new(JournalColumn::Amount.name().into(), amount),
+            ),
+        ],
+    )?;
     Ok(df)
 }
 
@@ -357,7 +360,7 @@ fn validate_all_accounts_are_in_budget(enriched: &DataFrame) -> Result<(), Box<d
 fn get_name_of_post(col: &Column, budget: &Budget) -> PolarsResult<Column> {
     let accounts = col.str()?;
     Ok(accounts
-        .into_iter()
+        .iter()
         .map(|a| {
             a.map(|a| budget.get_post_by_account(a).map(|p| p.name.clone()))
                 .or(None)?
@@ -370,7 +373,7 @@ fn get_name_of_post(col: &Column, budget: &Budget) -> PolarsResult<Column> {
 fn get_budget_of_post(col: &Column, budget: &Budget, year: &str) -> PolarsResult<Column> {
     let accounts = col.str()?;
     Ok(accounts
-        .into_iter()
+        .iter()
         .map(|a| a.map(|a| budget.get_budget_amount_by_account(a, year)))
         .collect::<Float64Chunked>()
         .into_column())
@@ -392,7 +395,7 @@ where
 {
     let accounts = col.str()?;
     Ok(accounts
-        .into_iter()
+        .iter()
         .map(|a| {
             a.map(|a| budget.get_post_by_account(a).map(int_extractor))
                 .or(None)?
