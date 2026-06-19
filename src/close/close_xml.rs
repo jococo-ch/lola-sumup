@@ -84,40 +84,38 @@ fn read_xml(input_path: &Path) -> Result<DataFrame, Box<dyn Error>> {
                         in_cell = false;
                     }
                 }
-                b"Row" => {
-                    if in_sheet {
-                        let date_index = JournalColumn::Date as u32;
-                        let description_index = JournalColumn::Description as u32;
-                        let debit_index = JournalColumn::Debit as u32;
-                        let credit_index = JournalColumn::Credit as u32;
-                        let amount_index = JournalColumn::Amount as u32;
-                        let mut df_row = new_row(
-                            &row.remove(&date_index).unwrap_or("1/1/2100".into()),
-                            row.remove(&description_index)
-                                .unwrap_or("description missing".into()),
-                            &row.remove(&debit_index).unwrap_or("debit missing".into()),
-                            &row.remove(&credit_index).unwrap_or("credit missing".into()),
-                            &row.remove(&amount_index).unwrap_or("0.0".into()),
-                        )?;
-                        df_row = df_row.fill_null(FillNullStrategy::Zero)?;
-                        let filtered = df_row
-                            .clone()
-                            .lazy()
-                            .filter(
-                                col("Date").is_not_null().and(
-                                    col("Date")
-                                        .str()
-                                        .contains(lit(r"^\d{4}-\d{2}-\d{2}$"), false),
-                                ),
-                            )
-                            .select([col("Date")])
-                            .collect()
-                            .unwrap();
-                        if filtered.shape().0 > 0 {
-                            df = df.vstack(&df_row)?;
-                        }
-                        row.clear();
+                b"Row" if in_sheet => {
+                    let date_index = JournalColumn::Date as u32;
+                    let description_index = JournalColumn::Description as u32;
+                    let debit_index = JournalColumn::Debit as u32;
+                    let credit_index = JournalColumn::Credit as u32;
+                    let amount_index = JournalColumn::Amount as u32;
+                    let mut df_row = new_row(
+                        &row.remove(&date_index).unwrap_or("1/1/2100".into()),
+                        row.remove(&description_index)
+                            .unwrap_or("description missing".into()),
+                        &row.remove(&debit_index).unwrap_or("debit missing".into()),
+                        &row.remove(&credit_index).unwrap_or("credit missing".into()),
+                        &row.remove(&amount_index).unwrap_or("0.0".into()),
+                    )?;
+                    df_row = df_row.fill_null(FillNullStrategy::Zero)?;
+                    let filtered = df_row
+                        .clone()
+                        .lazy()
+                        .filter(
+                            col("Date").is_not_null().and(
+                                col("Date")
+                                    .str()
+                                    .contains(lit(r"^\d{4}-\d{2}-\d{2}$"), false),
+                            ),
+                        )
+                        .select([col("Date")])
+                        .collect()
+                        .unwrap();
+                    if filtered.shape().0 > 0 {
+                        df = df.vstack(&df_row)?;
                     }
+                    row.clear();
                 }
                 _ => {}
             },
