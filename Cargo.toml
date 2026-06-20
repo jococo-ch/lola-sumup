@@ -22,16 +22,11 @@ rust_xlsxwriter = { version = "0.93.0", features = ["polars"] }
 version = "0.52.0"
 features = [
     "abs",
-    "concat_str",
-    "dtype-date",
     "is_in",
     "lazy",
-    "regex",
     "round_series",
-    "semi_anti_join",
     "strings",
-    "temporal",
-    "timezones",
+    "timezones", # required by polars-0.52.0 bug: TZ_AWARE_RE not feature-gated
 ]
 
 [dev-dependencies]
