@@ -335,7 +335,7 @@ fn export_banana(
 }
 
 /// Constructs a path for an XLSX file from `prefix`, `month` and `ts` (timestamp).
-pub fn path_with_prefix(prefix: &str, month: &str, ts: &str) -> PathBuf {
+fn path_with_prefix(prefix: &str, month: &str, ts: &str) -> PathBuf {
     PathBuf::from(format!("{prefix}_{month}_{ts}.xlsx"))
 }
 
