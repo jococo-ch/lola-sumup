@@ -331,7 +331,11 @@ fn combine_input_dfs(sr_df: &DataFrame, txr_df: &DataFrame) -> Result<DataFrame,
                 .and(col("Zahlungsmethode").eq(lit("Bar"))),
         )
         .group_by([col("Konto"), col("Date_trx"), col("Transaktionsnummer")])
-        .agg([col("Preis (netto)").sum().alias("Total Netto")])
+        .agg([
+            col("Preis (netto)").sum().alias("Total Netto"),
+            col("Beschreibung").first().alias("Beschreibung_orig"),
+            len().alias("Anzahl_Zeilen"),
+        ])
         .select([
             col("Konto"),
             col("Date_trx").alias("Zeitstempel"),
@@ -347,7 +351,10 @@ fn combine_input_dfs(sr_df: &DataFrame, txr_df: &DataFrame) -> Result<DataFrame,
             lit("CASH").alias("Zahlungsmethode"),
             lit("N/A").alias("Eingabemodus"),
             lit("").alias("Autorisierungscode"),
-            lit("aggregated").alias("Beschreibung"),
+            when(col("Anzahl_Zeilen").eq(lit(1u32)))
+                .then(col("Beschreibung_orig"))
+                .otherwise(lit("aggregated"))
+                .alias("Beschreibung"),
             col("Total Netto").alias("Betrag"),
             lit(0.0).alias("Gebührenbetrag"),
             col("Total Netto").alias("Auszahlungsbetrag"),
@@ -400,7 +407,7 @@ fn combine_input_dfs(sr_df: &DataFrame, txr_df: &DataFrame) -> Result<DataFrame,
         )
         .select([col("Date"), col("Time").alias("ChangeOfShift")])
         .group_by([col("Date")])
-        .agg([col("ChangeOfShift").last().alias("ChangeOfShift")])
+        .agg([col("ChangeOfShift").max().alias("ChangeOfShift")])
         .collect()?;
     change_of_shift_df.rechunk_mut();
 
@@ -516,7 +523,7 @@ fn combine_input_dfs(sr_df: &DataFrame, txr_df: &DataFrame) -> Result<DataFrame,
             col("Type"),
             col("Transaktionsnummer").alias("Transaction ID"),
             col("Payment Method"),
-            col("Menge").alias("Quantity"),
+            col("Menge").cast(DataType::Int32).alias("Quantity"),
             col("Beschreibung").alias("Description"),
             col("Währung").alias("Currency"),
             col("Preis (brutto)").alias("Price (Gross)"),
@@ -747,15 +754,15 @@ pub enum Owner {
 
 #[cfg(test)]
 mod tests {
-    use polars::prelude::*;
     use rstest::*;
 
     use crate::test_fixtures::{
         intermediate_df_01, intermediate_df_07, intermediate_df_09, intermediate_df_11,
-        sales_report_df_01, sales_report_df_02, sales_report_df_07, sales_report_df_09,
-        sales_report_df_09legacy, sales_report_df_10, sales_report_df_11, transaction_report_df_01,
-        transaction_report_df_02, transaction_report_df_07, transaction_report_df_09,
-        transaction_report_df_10, transaction_report_df_11,
+        intermediate_df_12, sales_report_df_01, sales_report_df_02, sales_report_df_07,
+        sales_report_df_09, sales_report_df_09legacy, sales_report_df_10, sales_report_df_11,
+        sales_report_df_12, transaction_report_df_01, transaction_report_df_02,
+        transaction_report_df_07, transaction_report_df_09, transaction_report_df_10,
+        transaction_report_df_11, transaction_report_df_12,
     };
     use crate::test_utils::assert_dataframe;
 
@@ -872,6 +879,20 @@ mod tests {
         let out = combine_input_dfs(&sales_report_df_11, &transaction_report_df_11)
             .expect("should be able to combine input dfs");
         assert_dataframe(&out, &intermediate_df_11);
+    }
+
+    /// Bug 589: With only cash payments (with no transactions in the report anymore since September 26)
+    /// SCHICHTWECHSEL after the default fallback 14:15 are not recognized anymore.
+    /// The Kaffee at 14:17 should still be considered MiTi/LoLa instead of Cafe.
+    #[rstest]
+    fn test_cash_trx_after_fallback_schichtwechsel_should_still_be_miti(
+        sales_report_df_12: DataFrame,
+        transaction_report_df_12: DataFrame,
+        intermediate_df_12: DataFrame,
+    ) {
+        let out = combine_input_dfs(&sales_report_df_12, &transaction_report_df_12)
+            .expect("should be able to combine input dfs");
+        assert_dataframe(&out, &intermediate_df_12);
     }
 
     #[fixture]
