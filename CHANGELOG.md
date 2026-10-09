@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.3](https://github.com/jococo-ch/lola-sumup/compare/v0.5.2...v0.5.3) - 2026-10-09
+
+### Added
+
+- [#590] Mittagstisch handles Cafe on Monday afternoons ([#593](https://github.com/jococo-ch/lola-sumup/pull/593))
+
+### Fixed
+
+- [#589] fix determination of late Schichtwechsel ([#591](https://github.com/jococo-ch/lola-sumup/pull/591))
+
 ## [0.5.2](https://github.com/jococo-ch/lola-sumup/compare/v0.5.1...v0.5.2) - 2026-09-09
 
 ### Added
