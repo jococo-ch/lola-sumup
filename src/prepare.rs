@@ -758,11 +758,12 @@ mod tests {
 
     use crate::test_fixtures::{
         intermediate_df_01, intermediate_df_07, intermediate_df_09, intermediate_df_11,
-        intermediate_df_12, sales_report_df_01, sales_report_df_02, sales_report_df_07,
-        sales_report_df_09, sales_report_df_09legacy, sales_report_df_10, sales_report_df_11,
-        sales_report_df_12, transaction_report_df_01, transaction_report_df_02,
-        transaction_report_df_07, transaction_report_df_09, transaction_report_df_10,
-        transaction_report_df_11, transaction_report_df_12,
+        intermediate_df_12, intermediate_df_13, sales_report_df_01, sales_report_df_02,
+        sales_report_df_07, sales_report_df_09, sales_report_df_09legacy, sales_report_df_10,
+        sales_report_df_11, sales_report_df_12, sales_report_df_13, transaction_report_df_01,
+        transaction_report_df_02, transaction_report_df_07, transaction_report_df_09,
+        transaction_report_df_10, transaction_report_df_11, transaction_report_df_12,
+        transaction_report_df_13,
     };
     use crate::test_utils::assert_dataframe;
 
@@ -893,6 +894,18 @@ mod tests {
         let out = combine_input_dfs(&sales_report_df_12, &transaction_report_df_12)
             .expect("should be able to combine input dfs");
         assert_dataframe(&out, &intermediate_df_12);
+    }
+
+    // #590: LoLa Cafe only on Tue to Fri
+    #[rstest]
+    fn test_cafe_on_weekdays_except_monday(
+        sales_report_df_13: DataFrame,
+        transaction_report_df_13: DataFrame,
+        intermediate_df_13: DataFrame,
+    ) {
+        let out = combine_input_dfs(&sales_report_df_13, &transaction_report_df_13)
+            .expect("should be able to combine input dfs");
+        assert_dataframe(&out, &intermediate_df_13);
     }
 
     #[fixture]
