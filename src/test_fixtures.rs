@@ -1418,8 +1418,8 @@ pub fn intermediate_df_12(
         "Price (Gross)" => &[26.0, 3.5, 0.0],
         "Price (Net)" => &[26.0, 3.5, 0.0],
         "Commission" => &[None::<i64>, None, None],
-        "Topic" => &["MiTi", "Cafe", "MiTi"],
-        "Owner" => &[Some("MiTi"), None, Some("MiTi")],
+        "Topic" => &["MiTi", "MiTi", "MiTi"],
+        "Owner" => &[Some("MiTi"), Some("LoLa"), Some("MiTi")],
         "Purpose" => &["Consumption", "Consumption", "Consumption"],
         "Comment" => &[AnyValue::Null, AnyValue::Null, AnyValue::Null],
     )

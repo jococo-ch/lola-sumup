@@ -331,7 +331,11 @@ fn combine_input_dfs(sr_df: &DataFrame, txr_df: &DataFrame) -> Result<DataFrame,
                 .and(col("Zahlungsmethode").eq(lit("Bar"))),
         )
         .group_by([col("Konto"), col("Date_trx"), col("Transaktionsnummer")])
-        .agg([col("Preis (netto)").sum().alias("Total Netto")])
+        .agg([
+            col("Preis (netto)").sum().alias("Total Netto"),
+            col("Beschreibung").first().alias("Beschreibung_orig"),
+            len().alias("Anzahl_Zeilen"),
+        ])
         .select([
             col("Konto"),
             col("Date_trx").alias("Zeitstempel"),
@@ -347,7 +351,10 @@ fn combine_input_dfs(sr_df: &DataFrame, txr_df: &DataFrame) -> Result<DataFrame,
             lit("CASH").alias("Zahlungsmethode"),
             lit("N/A").alias("Eingabemodus"),
             lit("").alias("Autorisierungscode"),
-            lit("aggregated").alias("Beschreibung"),
+            when(col("Anzahl_Zeilen").eq(lit(1u32)))
+                .then(col("Beschreibung_orig"))
+                .otherwise(lit("aggregated"))
+                .alias("Beschreibung"),
             col("Total Netto").alias("Betrag"),
             lit(0.0).alias("Gebührenbetrag"),
             col("Total Netto").alias("Auszahlungsbetrag"),
