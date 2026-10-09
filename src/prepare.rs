@@ -297,6 +297,17 @@ fn combine_input_dfs(sr_df: &DataFrame, txr_df: &DataFrame) -> Result<DataFrame,
                 .alias("is_weekend"),
         )
         .with_column(
+            col("Date")
+                .dt()
+                .weekday()
+                .cast(DataType::Int64)
+                .is_in(
+                    lit(Series::from_vec("mo".into(), vec![1])).implode(false),
+                    false,
+                )
+                .alias("is_monday"),
+        )
+        .with_column(
             (col("Datum").str().extract(lit(r".{10}, (\d\d:\d\d)"), 1) + lit(":00"))
                 .str()
                 .to_time(time_format.clone())
@@ -558,7 +569,7 @@ fn infer_payment_method() -> Expr {
 /// - if the `Category` contains " (PO)", the Topic is `Culture` regardless of the time of the day
 /// - before 06:00 and after 18:00 -> `Culture` or if it is a week-end.
 /// - between 06:00 and `ChangeOfShift` -> `MiTi`
-/// - between `ChangeOfShift` and 18:00 -> `Cafe`
+/// - between `ChangeOfShift` and 18:00 -> `Cafe` unless it's Monday
 /// - If the description starts with "Recircle Tupper Depot", the topic will be `Packaging` regardless of time or day.
 /// - If the description is "Miete", the topic will be `Rental` regardless of time or day.
 /// - If the description starts with "Kerze", the topic will be Culture regardless of time or day.
@@ -589,6 +600,12 @@ fn infer_topic(time_options: &StrptimeOptions) -> Expr {
                 .gt_eq(lit("06:00:00").str().to_time(time_options.clone()))
                 .and(col("TimeTrx").lt_eq(col("ChangeOfShift")))
                 .and(col("is_weekend").eq(lit(false))),
+        )
+        .then(lit(Topic::MiTi.to_string()))
+        .when(
+            col("is_monday")
+                .eq(lit(true))
+                .and(col("TimeTrx").lt(lit("18:00:00").str().to_time(time_options.clone()))),
         )
         .then(lit(Topic::MiTi.to_string()))
         .when(
@@ -758,11 +775,12 @@ mod tests {
 
     use crate::test_fixtures::{
         intermediate_df_01, intermediate_df_07, intermediate_df_09, intermediate_df_11,
-        intermediate_df_12, sales_report_df_01, sales_report_df_02, sales_report_df_07,
-        sales_report_df_09, sales_report_df_09legacy, sales_report_df_10, sales_report_df_11,
-        sales_report_df_12, transaction_report_df_01, transaction_report_df_02,
-        transaction_report_df_07, transaction_report_df_09, transaction_report_df_10,
-        transaction_report_df_11, transaction_report_df_12,
+        intermediate_df_12, intermediate_df_13, sales_report_df_01, sales_report_df_02,
+        sales_report_df_07, sales_report_df_09, sales_report_df_09legacy, sales_report_df_10,
+        sales_report_df_11, sales_report_df_12, sales_report_df_13, transaction_report_df_01,
+        transaction_report_df_02, transaction_report_df_07, transaction_report_df_09,
+        transaction_report_df_10, transaction_report_df_11, transaction_report_df_12,
+        transaction_report_df_13,
     };
     use crate::test_utils::assert_dataframe;
 
@@ -895,6 +913,18 @@ mod tests {
         assert_dataframe(&out, &intermediate_df_12);
     }
 
+    // #590: LoLa Cafe only on Tue to Fri
+    #[rstest]
+    fn test_cafe_on_weekdays_except_monday(
+        sales_report_df_13: DataFrame,
+        transaction_report_df_13: DataFrame,
+        intermediate_df_13: DataFrame,
+    ) {
+        let out = combine_input_dfs(&sales_report_df_13, &transaction_report_df_13)
+            .expect("should be able to combine input dfs");
+        assert_dataframe(&out, &intermediate_df_13);
+    }
+
     #[fixture]
     fn topic_sample_df() -> DataFrame {
         let rtd = "Recircle Tupper Depot";
@@ -953,6 +983,20 @@ mod tests {
                 false, false, false, false, false, true, true, false,
                 false, true,
                 false, true, false,
+                false, false,
+            ],
+            "is_monday" => [
+                false, false,
+                false, false,
+                false, false,
+                false, false,
+                false, false,
+                false, false,
+                false, false,
+                false, false, false, false,
+                false, false, false, false, false, false, false, false,
+                false, false,
+                false, false, false,
                 false, false,
             ],
             "Kategorie" => [

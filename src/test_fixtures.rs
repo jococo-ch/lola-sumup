@@ -1,4 +1,4 @@
-use chrono::{Duration, NaiveDate, NaiveTime};
+use chrono::{Days, Duration, NaiveDate, NaiveTime};
 use polars::df;
 use polars::frame::DataFrame;
 use polars::prelude::AnyValue;
@@ -8,6 +8,11 @@ use rstest::fixture;
 #[fixture]
 pub fn sample_date() -> NaiveDate {
     NaiveDate::parse_from_str("24.3.23", "%d.%m.%y").expect("valid date")
+}
+
+#[fixture]
+pub fn sample_date_monday() -> NaiveDate {
+    NaiveDate::parse_from_str("12.10.26", "%d.%m.%y").expect("valid date")
 }
 
 #[fixture]
@@ -1374,7 +1379,7 @@ pub fn sales_report_df_12(
 }
 
 #[fixture]
-pub fn transaction_report_df_12() -> DataFrame {
+pub fn empty_transaction_report() -> DataFrame {
     let schema = Schema::from_iter([
         Field::new("Konto".into(), DataType::String),
         Field::new("Zeitstempel".into(), DataType::String),
@@ -1396,6 +1401,11 @@ pub fn transaction_report_df_12() -> DataFrame {
         Field::new("Auszahlungs-ID".into(), DataType::String),
     ]);
     DataFrame::empty_with_schema(&schema)
+}
+
+#[fixture]
+pub fn transaction_report_df_12() -> DataFrame {
+    empty_transaction_report()
 }
 
 #[fixture]
@@ -1424,5 +1434,100 @@ pub fn intermediate_df_12(
     )
     .expect("valid intermediate dataframe 12")
 }
+//end region
 
+//begin region
+#[fixture]
+pub fn sales_report_df_13(
+    sample_date_monday: NaiveDate,
+    sample_time_after_fallback_schichtwechsel: NaiveTime,
+) -> DataFrame {
+    let fmt = |n: u64| -> String {
+        sample_date_monday
+            .checked_add_days(Days::new(n))
+            .expect("Unable to create day")
+            .format("%d.%m.%Y")
+            .to_string()
+    };
+    let mon = fmt(0);
+    let tue = fmt(1);
+    let wed = fmt(2);
+    let thu = fmt(3);
+    let fri = fmt(4);
+    let sat = fmt(5);
+    let sun = fmt(6);
+    let time = sample_time_after_fallback_schichtwechsel
+        .format("%H:%M")
+        .to_string();
+    let d1 = format!("{mon}, {time}");
+    let d2 = format!("{tue}, {time}");
+    let d3 = format!("{wed}, {time}");
+    let d4 = format!("{thu}, {time}");
+    let d5 = format!("{fri}, {time}");
+    let d6 = format!("{sat}, {time}");
+    let d7 = format!("{sun}, {time}");
+    df!(
+        "Datum" => &[d1, d2, d3, d4, d5, d6, d7],
+        "Typ" => &["Verkauf", "Verkauf", "Verkauf", "Verkauf", "Verkauf", "Verkauf", "Verkauf"],
+        "Transaktionsnummer" => &["TAAAZFC7HSHa", "TAAAZFC7HSHb", "TAAAZFC7HSHc", "TAAAZFC7HSHd", "TAAAZFC7HSHe", "TAAAZFC7HSHf", "TAAAZFC7HSHg"],
+        "Zahlungsmethode" => &["Bar", "Bar", "Bar", "Bar", "Bar", "Bar", "Bar"],
+        "Menge" => &[1_i64, 1_i64, 1_i64, 1_i64, 1_i64, 1_i64, 1_i64],
+        "Beschreibung" => &["Kaffee", "Kaffee", "Kaffee", "Kaffee", "Kaffee", "Kaffee", "Kaffee"],
+        "Kategorie" => &["Alkoholfrei", "Alkoholfrei", "Alkoholfrei", "Alkoholfrei", "Alkoholfrei", "Alkoholfrei", "Alkoholfrei"],
+        "Artikelnummer" => &["", "", "", "", "", "", ""],
+        "Währung" => &["CHF", "CHF", "CHF", "CHF", "CHF", "CHF", "CHF"],
+        "Preis vor Rabatt" => &[3.5, 3.5, 3.5, 3.5, 3.5, 3.5, 3.5],
+        "Rabatt" => &[Some(0.0), Some(0.0), Some(0.0), Some(0.0), Some(0.0), Some(0.0), Some(0.0)],
+        "Preis (brutto)" => &[3.5, 3.5, 3.5, 3.5, 3.5, 3.5, 3.5],
+        "Preis (netto)" => &[3.5, 3.5, 3.5, 3.5, 3.5, 3.5, 3.5],
+        "Steuer" => &[Some(0.0), Some(0.0), Some(0.0), Some(0.0), Some(0.0), Some(0.0), Some(0.0)],
+        "Steuersatz" => &["", "", "", "", "", "", ""],
+        "Konto" => &[Some("a@b.ch"), Some("a@b.ch"), Some("a@b.ch"), Some("a@b.ch"), Some("a@b.ch"), Some("a@b.ch"), Some("a&b.ch")],
+    )
+    .expect("valid dataframe sales report data frame 13")
+}
+
+#[fixture]
+pub fn transaction_report_df_13() -> DataFrame {
+    empty_transaction_report()
+}
+
+#[fixture]
+pub fn intermediate_df_13(
+    sample_date_monday: NaiveDate,
+    sample_time_after_fallback_schichtwechsel: NaiveTime,
+) -> DataFrame {
+    let fmt = |n: u64| -> NaiveDate {
+        sample_date_monday
+            .checked_add_days(Days::new(n))
+            .expect("Unable to create day")
+    };
+    let mon = fmt(0);
+    let tue = fmt(1);
+    let wed = fmt(2);
+    let thu = fmt(3);
+    let fri = fmt(4);
+    let sat = fmt(5);
+    let sun = fmt(6);
+    let t = sample_time_after_fallback_schichtwechsel;
+    df!(
+        "Account" => &["a@b.ch", "a@b.ch", "a@b.ch", "a@b.ch", "a@b.ch", "a@b.ch", "a&b.ch"],
+        "Date" => &[mon, tue, wed, thu, fri, sat, sun],
+        "Time" => &[t, t, t, t, t, t, t],
+        "Type" => &["Sales", "Sales", "Sales", "Sales", "Sales", "Sales", "Sales"],
+        "Transaction ID" => &["TAAAZFC7HSHa", "TAAAZFC7HSHb", "TAAAZFC7HSHc", "TAAAZFC7HSHd", "TAAAZFC7HSHe", "TAAAZFC7HSHf", "TAAAZFC7HSHg"],
+        "Payment Method" => &["Cash", "Cash", "Cash", "Cash", "Cash", "Cash", "Cash"],
+        "Quantity" => &[1_i32, 1_i32, 1_i32, 1_i32, 1_i32, 1_i32, 1_i32],
+        "Description" => &["Kaffee", "Kaffee", "Kaffee", "Kaffee", "Kaffee", "Kaffee", "Kaffee"],
+        "Currency" => &["CHF", "CHF", "CHF", "CHF", "CHF", "CHF", "CHF"],
+        "Price (Gross)" => &[3.5, 3.5, 3.5, 3.5, 3.5, 3.5, 3.5],
+        "Price (Net)" => &[3.5, 3.5, 3.5, 3.5, 3.5, 3.5, 3.5],
+        "Commission" => &[None::<i64>, None, None, None, None, None, None],
+        "Topic" => &["MiTi", "Cafe","Cafe","Cafe","Cafe","Culture","Culture"],
+        "Owner" => &[Some("LoLa"), None, None,None, None, Some("LoLa"), Some("LoLa")],
+        "Purpose" => &["Consumption", "Consumption", "Consumption", "Consumption", "Consumption", "Consumption", "Consumption"],
+        "Comment" => &[AnyValue::Null, AnyValue::Null, AnyValue::Null, AnyValue::Null, AnyValue::Null, AnyValue::Null, AnyValue::Null],
+    )
+    .expect("valid intermediate dataframe 13")
+}
 //end region
