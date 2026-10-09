@@ -407,7 +407,7 @@ fn combine_input_dfs(sr_df: &DataFrame, txr_df: &DataFrame) -> Result<DataFrame,
         )
         .select([col("Date"), col("Time").alias("ChangeOfShift")])
         .group_by([col("Date")])
-        .agg([col("ChangeOfShift").last().alias("ChangeOfShift")])
+        .agg([col("ChangeOfShift").max().alias("ChangeOfShift")])
         .collect()?;
     change_of_shift_df.rechunk_mut();
 
