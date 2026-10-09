@@ -1523,8 +1523,8 @@ pub fn intermediate_df_13(
         "Price (Gross)" => &[3.5, 3.5, 3.5, 3.5, 3.5, 3.5, 3.5],
         "Price (Net)" => &[3.5, 3.5, 3.5, 3.5, 3.5, 3.5, 3.5],
         "Commission" => &[None::<i64>, None, None, None, None, None, None],
-        "Topic" => &["Cafe", "Cafe","Cafe","Cafe","Cafe","Culture","Culture"],
-        "Owner" => &[None, None, None,None, None, Some("LoLa"), Some("LoLa")],
+        "Topic" => &["MiTi", "Cafe","Cafe","Cafe","Cafe","Culture","Culture"],
+        "Owner" => &[Some("LoLa"), None, None,None, None, Some("LoLa"), Some("LoLa")],
         "Purpose" => &["Consumption", "Consumption", "Consumption", "Consumption", "Consumption", "Consumption", "Consumption"],
         "Comment" => &[AnyValue::Null, AnyValue::Null, AnyValue::Null, AnyValue::Null, AnyValue::Null, AnyValue::Null, AnyValue::Null],
     )
