@@ -1404,7 +1404,6 @@ pub fn intermediate_df_12(
     sample_time_after_fallback_schichtwechsel: NaiveTime,
     sample_time_schichtwechsel: NaiveTime,
 ) -> DataFrame {
-    // TODO The Kaffee transaction should not be Cafe but MiTi/LoLa
     df!(
         "Account" => &["a@b.ch", "a@b.ch", "a@b.ch"],
         "Date" => &[sample_date, sample_date, sample_date],

@@ -754,7 +754,6 @@ pub enum Owner {
 
 #[cfg(test)]
 mod tests {
-    use polars::prelude::*;
     use rstest::*;
 
     use crate::test_fixtures::{
