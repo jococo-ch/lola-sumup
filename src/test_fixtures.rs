@@ -2,6 +2,7 @@ use chrono::{Duration, NaiveDate, NaiveTime};
 use polars::df;
 use polars::frame::DataFrame;
 use polars::prelude::AnyValue;
+use polars::prelude::*;
 use rstest::fixture;
 
 #[fixture]
@@ -22,6 +23,16 @@ pub fn sample_time_minus_5(sample_time: NaiveTime) -> NaiveTime {
 #[fixture]
 pub fn sample_time_plus_5(sample_time: NaiveTime) -> NaiveTime {
     sample_time + Duration::minutes(5)
+}
+
+#[fixture]
+pub fn sample_time_after_fallback_schichtwechsel() -> NaiveTime {
+    NaiveTime::parse_from_str("14:17", "%H:%M").expect("valid time")
+}
+
+#[fixture]
+pub fn sample_time_schichtwechsel() -> NaiveTime {
+    NaiveTime::parse_from_str("14:20", "%H:%M").expect("valid time")
 }
 
 //region::01 - from raw files to intermediate
@@ -1320,7 +1331,99 @@ pub fn intermediate_df_11(
         "Purpose" => &["Consumption", "Consumption", "Consumption"],
         "Comment" => &[AnyValue::Null, AnyValue::Null, AnyValue::Null],
     )
-    .expect("valid intermediate dataframe 09")
+    .expect("valid intermediate dataframe 11")
+}
+
+//end region
+
+//region
+// MiTi longer than fallback SCHICHTWECHSEL, All Cash, with no trx in the trx report
+#[fixture]
+pub fn sales_report_df_12(
+    sample_date: NaiveDate,
+    sample_time_after_fallback_schichtwechsel: NaiveTime,
+    sample_time_schichtwechsel: NaiveTime,
+) -> DataFrame {
+    let date = sample_date.format("%d.%m.%Y").to_string();
+    let time1 = sample_time_after_fallback_schichtwechsel
+        .format("%H:%M")
+        .to_string();
+    let time2 = sample_time_schichtwechsel.format("%H:%M").to_string();
+    let d1 = format!("{date}, {time1}");
+    let d2 = format!("{date}, {time2}");
+    let trx_id = "TAAAZFC7HSH";
+    df!(
+        "Datum" => &[d1.clone(), d1, d2],
+        "Typ" => &["Verkauf", "Verkauf", "Verkauf"],
+        "Transaktionsnummer" => &[trx_id, trx_id, "TAAAZFCAHD7"],
+        "Zahlungsmethode" => &["Bar", "Bar", "Bar"],
+        "Menge" => &[2_i64, 1_i64, 1_i64],
+        "Beschreibung" => &["Hauptgang Vegi Standard", "Kaffee", "SCHICHTWECHSEL"],
+        "Kategorie" => &["Mittagstisch", "Alkoholfrei", "Mittagstisch"],
+        "Artikelnummer" => &["", "", ""],
+        "Währung" => &["CHF", "CHF", "CHF"],
+        "Preis vor Rabatt" => &[26.0, 3.5, 0.01],
+        "Rabatt" => &[Some(0.0), Some(0.0), Some(0.0)],
+        "Preis (brutto)" => &[26.0, 3.5, 0.01],
+        "Preis (netto)" => &[Some(26.0), Some(3.5), Some(0.01)],
+        "Steuer" => &[Some(0.0), Some(0.0), Some(0.0)],
+        "Steuersatz" => &["", "", ""],
+        "Konto" => &[Some("a@b.ch"), Some("a@b.ch"), Some("a@b.ch")],
+    )
+    .expect("valid dataframe sales report data frame 12")
+}
+
+#[fixture]
+pub fn transaction_report_df_12() -> DataFrame {
+    let schema = Schema::from_iter([
+        Field::new("Konto".into(), DataType::String),
+        Field::new("Zeitstempel".into(), DataType::String),
+        Field::new("Transaktionscode".into(), DataType::String),
+        Field::new("Transaktionsart".into(), DataType::String),
+        Field::new("Status".into(), DataType::String),
+        Field::new("Referenz".into(), DataType::String),
+        Field::new("Kartensystem".into(), DataType::String),
+        Field::new("Letzte 4 Ziffern der Karte".into(), DataType::Int64),
+        Field::new("Kartentyp".into(), DataType::String),
+        Field::new("Zahlungsmethode".into(), DataType::String),
+        Field::new("Eingabemodus".into(), DataType::String),
+        Field::new("Autorisierungscode".into(), DataType::String),
+        Field::new("Beschreibung".into(), DataType::String),
+        Field::new("Betrag".into(), DataType::Float64),
+        Field::new("Gebührenbetrag".into(), DataType::Float64),
+        Field::new("Auszahlungsbetrag".into(), DataType::Float64),
+        Field::new("Auszahlungsdatum".into(), DataType::String),
+        Field::new("Auszahlungs-ID".into(), DataType::String),
+    ]);
+    DataFrame::empty_with_schema(&schema)
+}
+
+#[fixture]
+pub fn intermediate_df_12(
+    sample_date: NaiveDate,
+    sample_time_after_fallback_schichtwechsel: NaiveTime,
+    sample_time_schichtwechsel: NaiveTime,
+) -> DataFrame {
+    // TODO The Kaffee transaction should not be Cafe but MiTi/LoLa
+    df!(
+        "Account" => &["a@b.ch", "a@b.ch", "a@b.ch"],
+        "Date" => &[sample_date, sample_date, sample_date],
+        "Time" => &[sample_time_after_fallback_schichtwechsel, sample_time_after_fallback_schichtwechsel, sample_time_schichtwechsel],
+        "Type" => &["Sales", "Sales", "Sales"],
+        "Transaction ID" => &["TAAAZFC7HSH", "TAAAZFC7HSH", "TAAAZFCAHD7"],
+        "Payment Method" => &["Cash", "Cash", "Cash"],
+        "Quantity" => &[2_i64, 1_i64, 1_i64],
+        "Description" => &["Hauptgang Vegi Standard", "Kaffee", "SCHICHTWECHSEL"],
+        "Currency" => &["CHF", "CHF", "CHF"],
+        "Price (Gross)" => &[26.0, 3.5, 0.0],
+        "Price (Net)" => &[26.0, 3.5, 0.0],
+        "Commission" => &[None::<i64>, None, None],
+        "Topic" => &["MiTi", "Cafe", "MiTi"],
+        "Owner" => &[Some("MiTi"), None, Some("MiTi")],
+        "Purpose" => &["Consumption", "Consumption", "Consumption"],
+        "Comment" => &[AnyValue::Null, AnyValue::Null, AnyValue::Null],
+    )
+    .expect("valid intermediate dataframe 12")
 }
 
 //end region

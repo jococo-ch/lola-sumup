@@ -752,10 +752,11 @@ mod tests {
 
     use crate::test_fixtures::{
         intermediate_df_01, intermediate_df_07, intermediate_df_09, intermediate_df_11,
-        sales_report_df_01, sales_report_df_02, sales_report_df_07, sales_report_df_09,
-        sales_report_df_09legacy, sales_report_df_10, sales_report_df_11, transaction_report_df_01,
-        transaction_report_df_02, transaction_report_df_07, transaction_report_df_09,
-        transaction_report_df_10, transaction_report_df_11,
+        intermediate_df_12, sales_report_df_01, sales_report_df_02, sales_report_df_07,
+        sales_report_df_09, sales_report_df_09legacy, sales_report_df_10, sales_report_df_11,
+        sales_report_df_12, transaction_report_df_01, transaction_report_df_02,
+        transaction_report_df_07, transaction_report_df_09, transaction_report_df_10,
+        transaction_report_df_11, transaction_report_df_12,
     };
     use crate::test_utils::assert_dataframe;
 
@@ -872,6 +873,20 @@ mod tests {
         let out = combine_input_dfs(&sales_report_df_11, &transaction_report_df_11)
             .expect("should be able to combine input dfs");
         assert_dataframe(&out, &intermediate_df_11);
+    }
+
+    /// Bug 589: With only cash payments (with no transactions in the report anymore since September 26)
+    /// SCHICHTWECHSEL after the default fallback 14:15 are not recognized anymore.
+    /// The Kaffee at 14:17 should still be considered MiTi/LoLa instead of Cafe.
+    #[rstest]
+    fn test_cash_trx_after_fallback_schichtwechsel_should_still_be_miti(
+        sales_report_df_12: DataFrame,
+        transaction_report_df_12: DataFrame,
+        intermediate_df_12: DataFrame,
+    ) {
+        let out = combine_input_dfs(&sales_report_df_12, &transaction_report_df_12)
+            .expect("should be able to combine input dfs");
+        assert_dataframe(&out, &intermediate_df_12);
     }
 
     #[fixture]
