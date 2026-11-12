@@ -1411,7 +1411,7 @@ dependencies = [
  "polars_excel_writer",
  "pretty_assertions",
  "rstest",
- "rust_xlsxwriter",
+ "rust_xlsxwriter 0.102.0",
  "serde",
  "strum",
  "strum_macros",
@@ -2350,7 +2350,7 @@ dependencies = [
  "chrono",
  "polars",
  "polars-arrow",
- "rust_xlsxwriter",
+ "rust_xlsxwriter 0.98.2",
 ]
 
 [[package]]
@@ -2760,6 +2760,16 @@ dependencies = [
  "polars",
  "ssfmt",
  "zip 8.6.0",
+]
+
+[[package]]
+name = "rust_xlsxwriter"
+version = "0.102.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6ca3d0e879a578c1313c2800ab0c6c029d38eed18098675e50341a30d32372ed"
+dependencies = [
+ "polars",
+ "zip 9.4.0",
 ]
 
 [[package]]
