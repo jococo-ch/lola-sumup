@@ -6,3 +6,4 @@
 .~lock.*
 workdir/
 .zed/
+.claude/settings.local.json
