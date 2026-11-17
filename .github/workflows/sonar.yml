@@ -31,6 +31,15 @@ jobs:
         with:
           prefix-key: "v6-rust-sonar"
 
+      - name: Install llvm-tools
+        run: rustup component add llvm-tools-preview
+      - uses: taiki-e/install-action@ab49d3c64680143e184118bed66a46419fc15519 # v2.90.5
+        with:
+          tool: cargo-llvm-cov
+
+      - name: Run tests with coverage
+        run: cargo llvm-cov --locked --lcov --output-path target/lcov.info
+
       # Run right before the scan: the ephemeral token is valid for 30 minutes only
       - uses: SonarSource/sonarqube-auth-action@b372e2c2930aadfcc4f4399446da1e12772709ad # v1.2
         id: auth
