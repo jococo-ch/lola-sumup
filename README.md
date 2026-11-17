@@ -1,6 +1,7 @@
 # lola-sumup
 
 [![](https://github.com/jococo-ch/lola-sumup/actions/workflows/verify.yml/badge.svg?branch=main)](https://github.com/jococo-ch/lola-sumup/actions/workflows/verify.yml)
+[![Quality gate status](https://sonarcloud.io/api/project_badges/measure?project=jococo-ch_lola-sumup&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=jococo-ch_lola-sumup)
 
 CLI to evaluate the monthly SumUp CSV extracts and extract LoLa specific reports.
 
