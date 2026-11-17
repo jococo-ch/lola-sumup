@@ -381,3 +381,13 @@ The columns of the resulting details export file are defined as follows:
   - `MealCount_Praktikum`: Number of meals for stagaire sponsored by LoLa per day
 - Sponsored meal reduction for Stagaire
   - `Total Praktikum`: Total for stagaire meals sponsored by LoLa per day
+
+## Development
+
+Working rules for coding agents and developers are in [CLAUDE.md](CLAUDE.md).
+
+Dependency updates (open Dependabot pull requests and Dependabot security alerts)
+can be assessed with the Claude Code skill
+[`/analyse-dependency`](.claude/skills/analyse-dependency/SKILL.md). Run it without
+arguments for all open Dependabot PRs, with a PR number for a single one, or with
+`alerts` followed by the pasted alerts.
